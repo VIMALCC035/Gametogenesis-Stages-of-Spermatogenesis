@@ -17,9 +17,6 @@ public class UIPromptController : MonoBehaviour
     [SerializeField] private Image dialogImage;
     [SerializeField] private TextMeshProUGUI dialogText;
 
-    [Header("Common Dialog Sprite")]
-    [SerializeField] private Sprite commonDialogSprite;
-
     private int currentPageIndex = -1;
 
     private void OnEnable()
@@ -39,6 +36,9 @@ public class UIPromptController : MonoBehaviour
 
     private void HandlePageChanged(int index)
     {
+        if (pages == null || pages.Length == 0)
+            return;
+
         if (index < 0 || index >= pages.Length)
             return;
 
@@ -50,7 +50,7 @@ public class UIPromptController : MonoBehaviour
     {
         PageData page = pages[index];
 
-        if (dialogPanel)
+        if (dialogPanel != null)
             dialogPanel.SetActive(false);
 
         ResetAllPanels();
@@ -58,16 +58,26 @@ public class UIPromptController : MonoBehaviour
         if (!page.showDialogBox && !page.showAlternatePanels)
             return;
 
+        // =========================================================
+        // DIALOG BOX
+        // =========================================================
+
         if (page.showDialogBox)
         {
-            if (dialogPanel)
+            if (dialogPanel != null)
                 dialogPanel.SetActive(true);
 
-            if (dialogText)
+            if (dialogText != null)
                 dialogText.text = page.pageText;
 
-            if (dialogImage)
-                dialogImage.sprite = commonDialogSprite;
+            if (dialogImage != null)
+            {
+                // Each page now has its own dialog sprite.
+                dialogImage.sprite = page.dialogSprite;
+
+                // Hide the Image component if no sprite is assigned.
+                dialogImage.enabled = page.dialogSprite != null;
+            }
         }
 
         ApplyPanelVisibility(index);
@@ -75,12 +85,15 @@ public class UIPromptController : MonoBehaviour
 
     private void ResetAllPanels()
     {
-        foreach (var p in pages)
+        if (pages == null)
+            return;
+
+        foreach (PageData page in pages)
         {
-            if (p.alternatePanels == null)
+            if (page == null || page.alternatePanels == null)
                 continue;
 
-            foreach (var panelData in p.alternatePanels)
+            foreach (AlternatePanelData panelData in page.alternatePanels)
             {
                 if (panelData != null && panelData.panel != null)
                     panelData.panel.SetActive(false);
@@ -90,23 +103,31 @@ public class UIPromptController : MonoBehaviour
 
     private void ApplyPanelVisibility(int currentIndex)
     {
+        if (pages == null)
+            return;
+
         for (int i = 0; i <= currentIndex; i++)
         {
             PageData page = pages[i];
 
-            if (!page.showAlternatePanels || page.alternatePanels == null)
+            if (page == null ||
+                !page.showAlternatePanels ||
+                page.alternatePanels == null)
+            {
                 continue;
+            }
 
-            foreach (var panelData in page.alternatePanels)
+            foreach (AlternatePanelData panelData in page.alternatePanels)
             {
                 if (panelData == null || panelData.panel == null)
                     continue;
 
-                // =========================================================
+                // =====================================================
                 // FIRST IGNORE
-                // =========================================================
+                // =====================================================
                 // If enabled, ignore this panel ONLY on its first visit.
                 // From the second visit onward, normal logic applies.
+
                 if (i == currentIndex &&
                     panelData.firstIgnore &&
                     !panelData.hasVisitedOnce)
@@ -115,11 +136,20 @@ public class UIPromptController : MonoBehaviour
                     continue;
                 }
 
-                // =========================================================
+                // =====================================================
                 // ENABLE ONCE
-                // =========================================================
-                if (panelData.enableOnce && panelData.hasBeenEnabledOnce)
+                // =====================================================
+                // If already enabled once, do not enable it again.
+
+                if (panelData.enableOnce &&
+                    panelData.hasBeenEnabledOnce)
+                {
                     continue;
+                }
+
+                // =====================================================
+                // CURRENT PAGE
+                // =====================================================
 
                 if (i == currentIndex)
                 {
@@ -128,10 +158,18 @@ public class UIPromptController : MonoBehaviour
                     if (panelData.enableOnce)
                         panelData.hasBeenEnabledOnce = true;
                 }
+
+                // =====================================================
+                // UPCOMING PAGES
+                // =====================================================
+
                 else if (panelData.stayInUpcomingPages)
                 {
-                    // Only allow staying panels if not restricted by enableOnce
-                    if (!panelData.enableOnce || !panelData.hasBeenEnabledOnce)
+                    // Only allow staying panels if not restricted
+                    // by enableOnce.
+
+                    if (!panelData.enableOnce ||
+                        !panelData.hasBeenEnabledOnce)
                     {
                         panelData.panel.SetActive(true);
                     }
@@ -150,8 +188,13 @@ public class PageData
     [TextArea]
     public string pageText;
 
-    [Header("Display Options")]
+    [Header("Dialog Settings")]
     public bool showDialogBox;
+
+    [Tooltip("Dialog image sprite used specifically for this page.")]
+    public Sprite dialogSprite;
+
+    [Header("Alternate Panel Settings")]
     public bool showAlternatePanels;
 
     [Header("Alternate Panels For This Page")]
@@ -163,15 +206,20 @@ public class AlternatePanelData
 {
     public GameObject panel;
 
-    [Tooltip("If enabled, this panel will remain active in upcoming pages")]
+    [Tooltip("If enabled, this panel will remain active in upcoming pages.")]
     public bool stayInUpcomingPages;
 
     [Header("First Visit")]
-    [Tooltip("If enabled, this panel will be ignored on the first visit only. It will appear from the second visit onward.")]
+    [Tooltip(
+        "If enabled, this panel will be ignored on the first visit only. " +
+        "It will appear from the second visit onward."
+    )]
     public bool firstIgnore;
 
     [Header("Enable Once Feature")]
-    [Tooltip("If enabled, panel will activate only once and never again on revisit")]
+    [Tooltip(
+        "If enabled, panel will activate only once and never again on revisit."
+    )]
     public bool enableOnce;
 
     [HideInInspector]
@@ -182,6 +230,7 @@ public class AlternatePanelData
 }
 
 #if UNITY_EDITOR
+
 [CustomEditor(typeof(UIPromptController))]
 [CanEditMultipleObjects]
 public class UIPromptControllerEditor : Editor
@@ -194,9 +243,11 @@ public class UIPromptControllerEditor : Editor
 
         if (GUILayout.Button("Name Pages"))
         {
-            foreach (var t in targets)
+            foreach (Object targetObject in targets)
             {
-                UIPromptController controller = (UIPromptController)t;
+                UIPromptController controller =
+                    (UIPromptController)targetObject;
+
                 NamePages(controller);
             }
         }
@@ -204,8 +255,11 @@ public class UIPromptControllerEditor : Editor
 
     private void NamePages(UIPromptController controller)
     {
-        SerializedObject so = new SerializedObject(controller);
-        SerializedProperty pagesProp = so.FindProperty("pages");
+        SerializedObject so =
+            new SerializedObject(controller);
+
+        SerializedProperty pagesProp =
+            so.FindProperty("pages");
 
         if (pagesProp == null || pagesProp.arraySize == 0)
         {
@@ -215,17 +269,23 @@ public class UIPromptControllerEditor : Editor
 
         for (int i = 0; i < pagesProp.arraySize; i++)
         {
-            SerializedProperty page = pagesProp.GetArrayElementAtIndex(i);
-            SerializedProperty nameProp = page.FindPropertyRelative("pageName");
+            SerializedProperty page =
+                pagesProp.GetArrayElementAtIndex(i);
+
+            SerializedProperty nameProp =
+                page.FindPropertyRelative("pageName");
 
             if (nameProp != null)
             {
-                nameProp.stringValue = $"Page {i + 1}";
+                nameProp.stringValue =
+                    $"Page {i + 1}";
             }
         }
 
         so.ApplyModifiedProperties();
+
         EditorUtility.SetDirty(controller);
     }
 }
+
 #endif
