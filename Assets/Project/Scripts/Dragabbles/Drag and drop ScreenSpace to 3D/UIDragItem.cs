@@ -1,219 +1,188 @@
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.Events;
 using System.Collections;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
-namespace DeterminingMassofaBodyUsingMeterscale
+[RequireComponent(typeof(CanvasGroup))]
+[RequireComponent(typeof(RectTransform))]
+public class UIDragItem : MonoBehaviour,
+    IBeginDragHandler,
+    IDragHandler,
+    IEndDragHandler
 {
-    [RequireComponent(typeof(CanvasGroup))]
-    [RequireComponent(typeof(RectTransform))]
-    public class UIDragItem : MonoBehaviour,
-        IBeginDragHandler,
-        IDragHandler,
-        IEndDragHandler
+    [Header("Identification")]
+    [SerializeField] private string itemID;
+
+    [Header("Drag Settings")]
+    [SerializeField] private float dragScale = 1.2f;
+    [SerializeField] private float scaleLerpSpeed = 12f;
+    [SerializeField] private float returnSpeed = 12f;
+
+    [Header("World Space Drop")]
+    [SerializeField] private WorldSpaceDropTarget dropTarget;
+
+    [Header("Events")]
+    [SerializeField] private UnityEvent onCorrectDrop;
+    [SerializeField] private UnityEvent onIncorrectDrop;
+
+    private RectTransform rectTransform;
+    private CanvasGroup canvasGroup;
+    private Canvas sourceCanvas;
+
+    private Vector2 originalPosition;
+    private Vector3 originalScale;
+    private Vector2 pointerOffset;
+
+    private Coroutine moveRoutine;
+    private Coroutine scaleRoutine;
+
+    public string ItemID => itemID;
+
+    private void Awake()
     {
-        [Header("Identification")]
-        [SerializeField] private string itemID;
+        rectTransform = GetComponent<RectTransform>();
+        canvasGroup = GetComponent<CanvasGroup>();
+        sourceCanvas = GetComponentInParent<Canvas>();
 
-        [Header("Drag Settings")]
-        [SerializeField] private float dragScale = 1.2f;
-        [SerializeField] private float scaleLerpSpeed = 12f;
-        [SerializeField] private float returnSpeed = 12f;
-
-        [Header("Events")]
-        public UnityEvent OnEnabled;
-
-        private RectTransform rectTransform;
-        private CanvasGroup canvasGroup;
-        private Canvas canvas;
-
-        private Vector2 originalPosition;
-        private Vector3 originalScale;
-
-        private Vector2 pointerOffset;
-
-        private Coroutine moveRoutine;
-        private Coroutine scaleRoutine;
-
-        public string ItemID => itemID;
-
-        #region Unity Lifecycle
-
-        private void Awake()
+        if (sourceCanvas == null)
         {
-            rectTransform = GetComponent<RectTransform>();
-            canvasGroup = GetComponent<CanvasGroup>();
-            canvas = GetComponentInParent<Canvas>();
+            Debug.LogError(
+                $"{nameof(UIDragItem)}: No parent Canvas found.",
+                this);
 
-            if (canvas == null)
-            {
-                Debug.LogError("UIDragItem: No parent Canvas found.");
-                enabled = false;
-                return;
-            }
-
-            originalScale = rectTransform.localScale;
+            enabled = false;
+            return;
         }
 
-        private void OnEnable()
-        {
-            OnEnabled?.Invoke();
-        }
+        originalScale = rectTransform.localScale;
+    }
 
-        private void OnDisable()
-        {
-            StopAllCoroutines();
-        }
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        originalPosition = rectTransform.anchoredPosition;
 
-        #endregion
+        canvasGroup.blocksRaycasts = false;
 
-        #region Drag Handlers
+        Camera sourceCamera = GetEventCamera(sourceCanvas);
 
-        public void OnBeginDrag(PointerEventData eventData)
-        {
-            // Store the starting position of this drag.
-            originalPosition = rectTransform.anchoredPosition;
-
-            // Disable raycast blocking while dragging.
-            // This allows the drop target underneath to receive the raycast.
-            canvasGroup.blocksRaycasts = false;
-
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                canvas.transform as RectTransform,
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                sourceCanvas.transform as RectTransform,
                 eventData.position,
-                canvas.renderMode == RenderMode.ScreenSpaceOverlay
-                    ? null
-                    : canvas.worldCamera,
-                out Vector2 localPoint);
-
+                sourceCamera,
+                out Vector2 localPoint))
+        {
             pointerOffset =
                 rectTransform.anchoredPosition - localPoint;
-
-            StartScale(originalScale * dragScale);
         }
 
-        public void OnDrag(PointerEventData eventData)
-        {
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                canvas.transform as RectTransform,
+        StartScale(originalScale * dragScale);
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        Camera sourceCamera = GetEventCamera(sourceCanvas);
+
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                sourceCanvas.transform as RectTransform,
                 eventData.position,
-                canvas.renderMode == RenderMode.ScreenSpaceOverlay
-                    ? null
-                    : canvas.worldCamera,
+                sourceCamera,
                 out Vector2 localPoint))
-            {
-                rectTransform.anchoredPosition =
-                    localPoint + pointerOffset;
-            }
+        {
+            rectTransform.anchoredPosition =
+                localPoint + pointerOffset;
+        }
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        canvasGroup.blocksRaycasts = true;
+
+        bool droppedCorrectly = false;
+
+        if (dropTarget != null)
+        {
+            droppedCorrectly =
+                dropTarget.TryDrop(this, eventData);
         }
 
-        public void OnEndDrag(PointerEventData eventData)
+        if (droppedCorrectly)
         {
-            // Re-enable raycast blocking after drag.
-            canvasGroup.blocksRaycasts = true;
-
-            Camera cam = canvas.renderMode == RenderMode.ScreenSpaceOverlay
-                ? null
-                : canvas.worldCamera;
-
-            Ray ray = cam != null
-                ? cam.ScreenPointToRay(eventData.position)
-                : Camera.main != null
-                    ? Camera.main.ScreenPointToRay(eventData.position)
-                    : default;
-
-            // Check whether the item was dropped on a GhostDropTarget.
-            if (ray.direction != Vector3.zero &&
-                Physics.Raycast(ray, out RaycastHit hit))
-            {
-                GhostDropTarget target =
-                    hit.collider.GetComponent<GhostDropTarget>();
-
-                if (target != null)
-                {
-                    // IMPORTANT:
-                    // Navigation is NOT unlocked here.
-                    //
-                    // GhostDropTarget controls navigation unlocking
-                    // after verifying the correct ItemID.
-                    bool droppedCorrectly = target.TryDrop(this);
-
-                    if (droppedCorrectly)
-                    {
-                        StartScale(originalScale);
-                        return;
-                    }
-                }
-            }
-
-            // Incorrect drop / normal drop.
-            StartReturn();
             StartScale(originalScale);
+            onCorrectDrop?.Invoke();
+            return;
         }
 
-        #endregion
+        StartReturn();
+        StartScale(originalScale);
 
-        #region Movement
+        onIncorrectDrop?.Invoke();
+    }
 
-        private void StartReturn()
+    private Camera GetEventCamera(Canvas canvas)
+    {
+        if (canvas == null)
+            return null;
+
+        if (canvas.renderMode == RenderMode.ScreenSpaceOverlay)
+            return null;
+
+        return canvas.worldCamera != null
+            ? canvas.worldCamera
+            : Camera.main;
+    }
+
+    private void StartReturn()
+    {
+        if (moveRoutine != null)
+            StopCoroutine(moveRoutine);
+
+        moveRoutine = StartCoroutine(ReturnRoutine());
+    }
+
+    private IEnumerator ReturnRoutine()
+    {
+        while (Vector2.Distance(
+                   rectTransform.anchoredPosition,
+                   originalPosition) > 0.01f)
         {
-            if (moveRoutine != null)
-                StopCoroutine(moveRoutine);
+            rectTransform.anchoredPosition =
+                Vector2.Lerp(
+                    rectTransform.anchoredPosition,
+                    originalPosition,
+                    Time.deltaTime * returnSpeed);
 
-            moveRoutine = StartCoroutine(ReturnRoutine());
+            yield return null;
         }
 
-        private IEnumerator ReturnRoutine()
+        rectTransform.anchoredPosition = originalPosition;
+        moveRoutine = null;
+    }
+
+    private void StartScale(Vector3 target)
+    {
+        if (scaleRoutine != null)
+            StopCoroutine(scaleRoutine);
+
+        scaleRoutine = StartCoroutine(
+            ScaleRoutine(target));
+    }
+
+    private IEnumerator ScaleRoutine(Vector3 target)
+    {
+        while (Vector3.Distance(
+                   rectTransform.localScale,
+                   target) > 0.001f)
         {
-            while (Vector2.Distance(
-                       rectTransform.anchoredPosition,
-                       originalPosition) > 0.01f)
-            {
-                rectTransform.anchoredPosition =
-                    Vector2.Lerp(
-                        rectTransform.anchoredPosition,
-                        originalPosition,
-                        Time.deltaTime * returnSpeed);
+            rectTransform.localScale =
+                Vector3.Lerp(
+                    rectTransform.localScale,
+                    target,
+                    Time.deltaTime * scaleLerpSpeed);
 
-                yield return null;
-            }
-
-            rectTransform.anchoredPosition = originalPosition;
-            moveRoutine = null;
+            yield return null;
         }
 
-        #endregion
-
-        #region Scaling
-
-        private void StartScale(Vector3 target)
-        {
-            if (scaleRoutine != null)
-                StopCoroutine(scaleRoutine);
-
-            scaleRoutine = StartCoroutine(
-                ScaleRoutine(target));
-        }
-
-        private IEnumerator ScaleRoutine(Vector3 target)
-        {
-            while (Vector3.Distance(
-                       rectTransform.localScale,
-                       target) > 0.001f)
-            {
-                rectTransform.localScale =
-                    Vector3.Lerp(
-                        rectTransform.localScale,
-                        target,
-                        Time.deltaTime * scaleLerpSpeed);
-
-                yield return null;
-            }
-
-            rectTransform.localScale = target;
-            scaleRoutine = null;
-        }
-
-        #endregion
+        rectTransform.localScale = target;
+        scaleRoutine = null;
     }
 }
