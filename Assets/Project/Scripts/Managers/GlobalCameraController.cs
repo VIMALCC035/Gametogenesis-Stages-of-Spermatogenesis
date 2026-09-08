@@ -31,7 +31,7 @@ public class GlobalCameraController : MonoBehaviour
 
     private Camera mainCamera;
 
-    // Tracks how many times each page was visited
+    // Tracks how many times each page was visited.
     private Dictionary<int, int> pageVisitCount = new();
 
     // ================= LIFECYCLE =================
@@ -56,7 +56,7 @@ public class GlobalCameraController : MonoBehaviour
 
         currentPageIndex = pageIndex;
 
-        // Track visits
+        // Track visits.
         if (!pageVisitCount.ContainsKey(pageIndex))
             pageVisitCount[pageIndex] = 0;
 
@@ -72,11 +72,11 @@ public class GlobalCameraController : MonoBehaviour
     {
         int visitCount = pageVisitCount[pageIndex];
 
-        // First visit → use primary
+        // First visit → use primary.
         if (visitCount == 1)
             return pageCameraPoints[pageIndex];
 
-        // Second+ visits → try secondary
+        // Second+ visits → try secondary.
         for (int i = 0; i < secondaryCameraPoints.Count; i++)
         {
             if (secondaryCameraPoints[i].pageIndex == pageIndex)
@@ -86,7 +86,7 @@ public class GlobalCameraController : MonoBehaviour
             }
         }
 
-        // Fallback to primary if no secondary found
+        // Fallback to primary if no secondary is found.
         return pageCameraPoints[pageIndex];
     }
 
@@ -99,18 +99,58 @@ public class GlobalCameraController : MonoBehaviour
 
     public void MoveTo(Transform target)
     {
-        if (target == null) return;
+        if (target == null)
+            return;
+
         StartMove(target);
+    }
+
+    /// <summary>
+    /// Instantly moves and rotates the Main Camera to the specified Transform.
+    /// Any active camera movement is stopped immediately.
+    /// </summary>
+    public void SetCamera(Transform target)
+    {
+        if (target == null)
+            return;
+
+        if (mainCamera == null)
+            mainCamera = Camera.main;
+
+        if (mainCamera == null)
+            return;
+
+        // Stop any active smooth movement.
+        if (routine != null)
+        {
+            StopCoroutine(routine);
+            routine = null;
+        }
+
+        Transform camTransform = mainCamera.transform;
+
+        // Instantly match position and rotation.
+        camTransform.SetPositionAndRotation(
+            target.position,
+            target.rotation
+        );
     }
 
     // ================= MOVEMENT CORE =================
 
     private void StartMove(Transform target)
     {
-        if (mainCamera == null) return;
+        if (mainCamera == null)
+            mainCamera = Camera.main;
+
+        if (mainCamera == null)
+            return;
 
         if (routine != null)
+        {
             StopCoroutine(routine);
+            routine = null;
+        }
 
         routine = StartCoroutine(MoveRoutine(target));
     }
@@ -131,17 +171,29 @@ public class GlobalCameraController : MonoBehaviour
 
         while (t < moveDuration)
         {
-            float progress = ease.Evaluate(t / moveDuration);
+            float progress = moveDuration > 0f
+                ? ease.Evaluate(t / moveDuration)
+                : 1f;
 
-            camTransform.position = Vector3.Lerp(startPos, endPos, progress);
-            camTransform.rotation = Quaternion.Slerp(startRot, endRot, progress);
+            camTransform.position = Vector3.Lerp(
+                startPos,
+                endPos,
+                progress
+            );
+
+            camTransform.rotation = Quaternion.Slerp(
+                startRot,
+                endRot,
+                progress
+            );
 
             t += Time.deltaTime;
             yield return null;
         }
 
-        camTransform.position = endPos;
-        camTransform.rotation = endRot;
+        camTransform.SetPositionAndRotation(endPos, endRot);
+
+        routine = null;
 
         OnMoveEnd?.Invoke();
     }

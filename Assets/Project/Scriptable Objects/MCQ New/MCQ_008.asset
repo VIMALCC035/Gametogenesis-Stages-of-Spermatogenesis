@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d01fd2d64a9249049aaa77d5c12a82fe, type: 3}
+  m_Name: MCQ_008
+  m_EditorClassIdentifier: Assembly-CSharp::MCQQuestionData
+  questionText: Spermiation is
+  referenceImage: {fileID: 0}
+  explanationText: In the testis, diploid spermatocytes transform into haploid sperms
+    by the process of spermatogenesis. Spermiation is the release of sperms into
+    the lumen of seminiferous tubules.
+  options:
+  - The release of sperms into the lumen of the seminiferous tubule.
+  - The process of formation of sperms.
+  - The formation of secondary spermatocytes.
+  - The formation of spermatids.
+  correctOptionIndex: 0
