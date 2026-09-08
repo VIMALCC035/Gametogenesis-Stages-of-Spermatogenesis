@@ -301,7 +301,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &137718054
 RectTransform:
   m_ObjectHideFlags: 0
@@ -433,9 +433,17 @@ MonoBehaviour:
   onCorrectDrop:
     m_PersistentCalls:
       m_Calls: []
+    m_CallsDirty: 1
   onIncorrectDrop:
     m_PersistentCalls:
       m_Calls: []
+    m_CallsDirty: 1
+  rectTransform: {fileID: 0}
+  canvasGroup: {fileID: 0}
+  sourceCanvas: {fileID: 0}
+  originalPosition: {x: 0, y: 0}
+  originalScale: {x: 0, y: 0, z: 0}
+  pointerOffset: {x: 0, y: 0}
 --- !u!1 &155666279
 GameObject:
   m_ObjectHideFlags: 0
@@ -451,7 +459,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &155666280
 RectTransform:
   m_ObjectHideFlags: 0
@@ -484,6 +492,8 @@ GameObject:
   - component: {fileID: 179201821}
   - component: {fileID: 179201823}
   - component: {fileID: 179201822}
+  - component: {fileID: 179201825}
+  - component: {fileID: 179201824}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -610,6 +620,32 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 179201820}
   m_CullTransparentMesh: 1
+--- !u!114 &179201824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 179201820}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5c5aab994bc0fd498c070055d81f9f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeterminingMassofaBodyUsingMeterscale.DraggableScreenSpace
+  itemID: 
+  returnDuration: 0.25
+--- !u!225 &179201825
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 179201820}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1001 &204660578
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1046,6 +1082,8 @@ GameObject:
   - component: {fileID: 210964273}
   - component: {fileID: 210964275}
   - component: {fileID: 210964274}
+  - component: {fileID: 210964277}
+  - component: {fileID: 210964276}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -1172,6 +1210,32 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 210964272}
   m_CullTransparentMesh: 1
+--- !u!114 &210964276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 210964272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5c5aab994bc0fd498c070055d81f9f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeterminingMassofaBodyUsingMeterscale.DraggableScreenSpace
+  itemID: 
+  returnDuration: 0.25
+--- !u!225 &210964277
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 210964272}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1001 &230443675
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2115,7 +2179,6 @@ GameObject:
   - component: {fileID: 534715378}
   - component: {fileID: 534715377}
   - component: {fileID: 534715380}
-  - component: {fileID: 534715381}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -2141,7 +2204,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 10.2988, y: 2.8342}
+  m_SizeDelta: {x: 10.2988, y: 2.6653}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &534715377
 MonoBehaviour:
@@ -2190,51 +2253,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 534715375}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 901ecccadf425954a81d3e5064cefa87, type: 3}
+  m_Script: {fileID: 11500000, guid: c76fde70217891d45943fecccc84e540, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WorldSpaceDropTarget
-  acceptedItemID: Correct
-  worldSpaceCanvas: {fileID: 21142113}
-  requirePointerInsideTarget: 1
+  correctItemID: 0
+  resizeOnDrop: 1
+  targetSize: {x: 200, y: 80}
+  targetFontSize: 1.2
   onCorrectDrop:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1558780215}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 977866241}
+        m_TargetAssemblyTypeName: PageNavigationController, Assembly-CSharp
+        m_MethodName: EnableNavigationButtons
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 1
+          m_BoolArgument: 0
         m_CallState: 2
-  onIncorrectDrop:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!65 &534715381
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 534715375}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 10.263505, y: 2.209961, z: 1}
-  m_Center: {x: 0, y: -1.2490616, z: 0}
 --- !u!65 &561416023
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2848,9 +2888,17 @@ MonoBehaviour:
   onCorrectDrop:
     m_PersistentCalls:
       m_Calls: []
+    m_CallsDirty: 1
   onIncorrectDrop:
     m_PersistentCalls:
       m_Calls: []
+    m_CallsDirty: 1
+  rectTransform: {fileID: 0}
+  canvasGroup: {fileID: 0}
+  sourceCanvas: {fileID: 0}
+  originalPosition: {x: 0, y: 0}
+  originalScale: {x: 0, y: 0, z: 0}
+  pointerOffset: {x: 0, y: 0}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -3084,8 +3132,8 @@ MonoBehaviour:
   previousButton: {fileID: 721996325390368953}
   pageNumberText: {fileID: 5596912501984901271}
   developerIndexMode: 0
-  testing: 1
-  requiresInteraction: 010101010101010101
+  testing: 0
+  requiresInteraction: 0101010101010101
   lockNavigationTillUnlocked: 00010101010101010101010101000000010101010100
   currentIndex: 0
 --- !u!4 &977866242
@@ -3114,6 +3162,8 @@ GameObject:
   - component: {fileID: 979099928}
   - component: {fileID: 979099930}
   - component: {fileID: 979099929}
+  - component: {fileID: 979099932}
+  - component: {fileID: 979099931}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -3240,6 +3290,32 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 979099927}
   m_CullTransparentMesh: 1
+--- !u!114 &979099931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 979099927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5c5aab994bc0fd498c070055d81f9f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeterminingMassofaBodyUsingMeterscale.DraggableScreenSpace
+  itemID: 0
+  returnDuration: 0.25
+--- !u!225 &979099932
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 979099927}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1001 &982322439
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3834,7 +3910,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1071465693
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4130,6 +4206,7 @@ GameObject:
   - component: {fileID: 1112552634}
   - component: {fileID: 1112552636}
   - component: {fileID: 1112552635}
+  - component: {fileID: 1112552637}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -4155,7 +4232,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 2.2737368e-13, y: 0}
-  m_SizeDelta: {x: 10.298801, y: 2.8342018}
+  m_SizeDelta: {x: 10.2988, y: 2.5324}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1112552635
 MonoBehaviour:
@@ -4195,6 +4272,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1112552633}
   m_CullTransparentMesh: 1
+--- !u!114 &1112552637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1112552633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c76fde70217891d45943fecccc84e540, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeterminingMassofaBodyUsingMeterscale.DropSlotUI
+  correctItemID: 00
+  resizeOnDrop: 1
+  targetSize: {x: 200, y: 80}
+  targetFontSize: 0.9
+  onCorrectDrop:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 977866241}
+        m_TargetAssemblyTypeName: PageNavigationController, Assembly-CSharp
+        m_MethodName: EnableNavigationButtons
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1157150691
 GameObject:
   m_ObjectHideFlags: 0
@@ -4206,7 +4314,6 @@ GameObject:
   - component: {fileID: 1157150692}
   - component: {fileID: 1157150696}
   - component: {fileID: 1157150695}
-  - component: {fileID: 1157150694}
   - component: {fileID: 1157150693}
   m_Layer: 5
   m_Name: Image (2)
@@ -4247,29 +4354,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &1157150694
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1157150691}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9aa824edd1437db4da70b2bae5624f75, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DeterminingMassofaBodyUsingMeterscale.UIDragItem
-  itemID: Wrong
-  dragScale: 1.2
-  scaleLerpSpeed: 12
-  returnSpeed: 12
-  dropTarget: {fileID: 0}
-  onCorrectDrop:
-    m_PersistentCalls:
-      m_Calls: []
-  onIncorrectDrop:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!114 &1157150695
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4708,9 +4792,17 @@ MonoBehaviour:
   onCorrectDrop:
     m_PersistentCalls:
       m_Calls: []
+    m_CallsDirty: 1
   onIncorrectDrop:
     m_PersistentCalls:
       m_Calls: []
+    m_CallsDirty: 1
+  rectTransform: {fileID: 0}
+  canvasGroup: {fileID: 0}
+  sourceCanvas: {fileID: 0}
+  originalPosition: {x: 0, y: 0}
+  originalScale: {x: 0, y: 0, z: 0}
+  pointerOffset: {x: 0, y: 0}
 --- !u!1 &1233790974
 GameObject:
   m_ObjectHideFlags: 0
@@ -5464,12 +5556,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIPromptController
   pages:
-  - pageName: Page 1
-    pageText: 
-    showDialogBox: 0
-    dialogSprite: {fileID: 0}
-    showAlternatePanels: 1
-    alternatePanels: []
   - pageName: Page 2
     pageText: 
     showDialogBox: 0
@@ -7181,8 +7267,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GlobalCameraController
   pageCameraPoints:
-  - {fileID: 1926260447}
   - {fileID: 479801909}
+  - {fileID: 1073297524}
   - {fileID: 1073297524}
   - {fileID: 1073297524}
   secondaryCameraPoints: []
@@ -7281,7 +7367,6 @@ GameObject:
   - component: {fileID: 1611150548}
   - component: {fileID: 1611150552}
   - component: {fileID: 1611150551}
-  - component: {fileID: 1611150550}
   - component: {fileID: 1611150549}
   m_Layer: 5
   m_Name: Image
@@ -7322,29 +7407,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &1611150550
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1611150547}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9aa824edd1437db4da70b2bae5624f75, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DeterminingMassofaBodyUsingMeterscale.UIDragItem
-  itemID: wrong
-  dragScale: 1.2
-  scaleLerpSpeed: 12
-  returnSpeed: 12
-  dropTarget: {fileID: 0}
-  onCorrectDrop:
-    m_PersistentCalls:
-      m_Calls: []
-  onIncorrectDrop:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!114 &1611150551
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7431,6 +7493,8 @@ GameObject:
   - component: {fileID: 1632551095}
   - component: {fileID: 1632551097}
   - component: {fileID: 1632551096}
+  - component: {fileID: 1632551099}
+  - component: {fileID: 1632551098}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -7557,6 +7621,32 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1632551094}
   m_CullTransparentMesh: 1
+--- !u!114 &1632551098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1632551094}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5c5aab994bc0fd498c070055d81f9f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeterminingMassofaBodyUsingMeterscale.DraggableScreenSpace
+  itemID: 00
+  returnDuration: 0.25
+--- !u!225 &1632551099
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1632551094}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1681383920
 GameObject:
   m_ObjectHideFlags: 0
@@ -7568,6 +7658,8 @@ GameObject:
   - component: {fileID: 1681383921}
   - component: {fileID: 1681383923}
   - component: {fileID: 1681383922}
+  - component: {fileID: 1681383925}
+  - component: {fileID: 1681383924}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -7694,6 +7786,32 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1681383920}
   m_CullTransparentMesh: 1
+--- !u!114 &1681383924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681383920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5c5aab994bc0fd498c070055d81f9f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeterminingMassofaBodyUsingMeterscale.DraggableScreenSpace
+  itemID: 
+  returnDuration: 0.25
+--- !u!225 &1681383925
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681383920}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1696708529
 GameObject:
   m_ObjectHideFlags: 0
@@ -7742,7 +7860,6 @@ GameObject:
   - component: {fileID: 1701175222}
   - component: {fileID: 1701175226}
   - component: {fileID: 1701175225}
-  - component: {fileID: 1701175224}
   - component: {fileID: 1701175223}
   m_Layer: 5
   m_Name: Image (1)
@@ -7783,29 +7900,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &1701175224
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1701175221}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9aa824edd1437db4da70b2bae5624f75, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DeterminingMassofaBodyUsingMeterscale.UIDragItem
-  itemID: Correct
-  dragScale: 1.2
-  scaleLerpSpeed: 12
-  returnSpeed: 12
-  dropTarget: {fileID: 0}
-  onCorrectDrop:
-    m_PersistentCalls:
-      m_Calls: []
-  onIncorrectDrop:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!114 &1701175225
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8690,6 +8784,8 @@ GameObject:
   - component: {fileID: 2106532884}
   - component: {fileID: 2106532886}
   - component: {fileID: 2106532885}
+  - component: {fileID: 2106532888}
+  - component: {fileID: 2106532887}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -8816,6 +8912,32 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2106532883}
   m_CullTransparentMesh: 1
+--- !u!114 &2106532887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2106532883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5c5aab994bc0fd498c070055d81f9f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeterminingMassofaBodyUsingMeterscale.DraggableScreenSpace
+  itemID: 
+  returnDuration: 0.25
+--- !u!225 &2106532888
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2106532883}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1439573275731770
 GameObject:
   m_ObjectHideFlags: 0
